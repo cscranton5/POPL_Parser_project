@@ -15,7 +15,7 @@ Group Members:
 
 3. Shakthivel Gnanasekaran ()
 
-4. Clayton Wiemann ()
+4. Clayton Wiemann (claytonwiemann)
 
 
 Helpfull Resources:
