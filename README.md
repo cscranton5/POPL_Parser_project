@@ -11,7 +11,7 @@ Group Members:
 
 1. Carter Scranton (cgs2xw)
 
-2. Allan Jones Jr (allanjonesjr24)
+2. Allan Jones Jr (allanjones24)
 
 3. Shakthivel Gnanasekaran ()
 
