@@ -1,18 +1,22 @@
 grammar Python;
 
 // Define the root rule
-prog:   statement+ ;
+prog:   (statement+ | NEWLINE)+;
 
 // Define what a statement can be (just expression in our case)
 statement: expr NEWLINE
-         | assignment NEWLINE ;
+         | assignment NEWLINE
+         | NEWLINE //in case new line for formatting
+         ;
 
 // Define an expression with arithmetic operators
 expr:   expr op=('*'|'/') expr    # MulDiv
      | expr op=('+'|'-') expr     # AddSub
+     | expr '%' expr         # Mod
      | INT                        # Int
      | FLOAT                      # Float
      | STRING                     # String
+     | list_expr                  # List
      | variable                   # VarExpr
      | '(' expr ')'               # Parens
      ;
@@ -28,6 +32,10 @@ assignment_operator:   '='
                     | '/='
                     ;
 
+list_expr: '[' elements? ']' ;
+elements: expr (',' expr)* ;
+
+
 // Tokens for the arithmetic operators
 MULT: '*' ;
 DIV:  '/' ;
@@ -40,7 +48,8 @@ variable: VAR ;
 
 // Tokens for var types and newline
 INT:    [0-9]+ ;
-STRING: '"' ( ~["\r\n] )* '"' ;
+STRING: '"' ( ~["\r\n] )* '"' 
+| '\'' ( ~['\\\r\n])* '\'';
 FLOAT: [0-9]+ '.' [0-9]+ ;
 NEWLINE:'\r'? '\n' ;
 
