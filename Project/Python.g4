@@ -10,8 +10,11 @@ statement: expr NEWLINE
 // Define an expression with arithmetic operators
 expr:   expr op=('*'|'/') expr    # MulDiv
      | expr op=('+'|'-') expr     # AddSub
-     | INT                         # Int
-     | '(' expr ')'                # Parens
+     | INT                        # Int
+     | FLOAT                      # Float
+     | STRING                     # String
+     | variable                   # VarExpr
+     | '(' expr ')'               # Parens
      ;
 
 // Define assignment expressions
@@ -35,8 +38,10 @@ MOD:  '%' ;
 // Define what a variable is
 variable: VAR ;
 
-// Tokens for integers and newline
+// Tokens for var types and newline
 INT:    [0-9]+ ;
+STRING: '"' ( ~["\r\n] )* '"' ;
+FLOAT: [0-9]+ '.' [0-9]+ ;
 NEWLINE:'\r'? '\n' ;
 
 // Tokens for variable names (simple for our example)
