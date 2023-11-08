@@ -24,3 +24,18 @@ Helpfull Resources:
 
 Antlr Mega Tutorial:
 https://tomassetti.me/antlr-mega-tutorial/#chapter23
+
+To run the project:
+
+Ensure you have the proper libraries installed (Antlr4, antlr4-python3-runtime)
+
+1. Generate Python files from g4:
+1.   a) inside "Project" directory, run antlr4 -Dlanguage=Python3 Python.g4
+2. Run the parser:
+2.   a) same directory, run python Parse.py
+
+
+
+
+
+
