@@ -34,6 +34,8 @@ Ensure you have the proper libraries installed (Antlr4, antlr4-python3-runtime)
 2. Run the parser:
 2.   a) same directory, run python Parse.py
 
+After running, this will bring up the parsing tree gui as well as print a flat text format
+
 
 
 
