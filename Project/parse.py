@@ -3,17 +3,22 @@ from PythonLexer import PythonLexer
 from PythonParser import PythonParser
 from PythonListener import PythonListener
 import sys
+import os
+
 
 def read_file(filename):
-    file = open(filename,'r')
+    file = open(filename, 'r')
     code = file.read()
     print(code)
     file.close()
     return code
 
+
 # Read your code from a file or from a string
-if(len(sys.argv) != 2): test_file = "../TestCases/project_deliverable_1_testcase.py"
-else: test_file = "../TestCases/" + sys.argv[1]
+if (len(sys.argv) != 2):
+    test_file = "../TestCases/project_deliverable_1_testcase.py"
+else:
+    test_file = "../TestCases/" + sys.argv[1]
 
 print(test_file)
 python_code = read_file(test_file)
@@ -39,3 +44,8 @@ tree_str = tree.toStringTree(recog=parser)
 
 # Print the parse tree
 print(tree_str)
+
+# Generates parse tree as a GUI
+os.system(
+    'antlr4-parse Python.g4 prog -gui < ../TestCases/project_deliverable_1_testcase.py')
+os.system('Ctrl + D')
