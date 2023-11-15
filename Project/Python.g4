@@ -57,6 +57,11 @@ LTEQ: '<=' ;
 INDENT: ' ' {getCharPositionInLine() == 0}? -> skip;
 DEDENT: '\n' {getCharPositionInLine() == 0}? -> skip;
 
+// Possible alternative for Tokens for indentation
+// INDENT: [ \t]+ -> skip;
+// DEDENT: '\r'? '\n' [ \t]* {getCharPositionInLine() == 0}? -> skip;
+
+
 relationalOp
     : GT
     | LT
