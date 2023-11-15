@@ -30,12 +30,39 @@ assignment_operator: '=' | '+=' | '-=' | '*=' | '/=';
 list_expr: '[' elements? ']';
 elements: expr (',' expr)*;
 
+
+//Atul Pseudocode for conditional statements, don't think they work yet
+// ifBlock: INDENT 'if' expr ':' NEWLINE block (elifBlock)* (elseBlock)? DEDENT ;
+// elifBlock: INDENT 'elif' expr ':' NEWLINE block DEDENT ;
+// elseBlock: INDENT 'else' ':' NEWLINE block DEDENT ;
+
+// block: (statement | ifBlock | NEWLINE)+ ;
+
 // Tokens for the arithmetic operators
 MULT: '*';
 DIV: '/';
 ADD: '+';
 SUB: '-';
 MOD: '%';
+GT:   '>' ;
+LT:   '<' ;
+EQ:   '==' ;
+NEQ:  '!=' ;
+GTEQ: '>=' ;
+LTEQ: '<=' ;
+
+
+// INDENT: ' ' { getCharPositionInLine() == 0 } -> channel(HIDDEN) ;
+// DEDENT: '\n' { getCharPositionInLine() == 0 } -> channel(HIDDEN) ;
+
+relationalOp
+    : GT
+    | LT
+    | EQ
+    | NEQ
+    | GTEQ
+    | LTEQ
+    ;
 
 // Define what a variable is
 variable: VAR;
