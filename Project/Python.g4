@@ -27,6 +27,23 @@ assignment: variable assignment_operator expr;
 // Define the possible assignment operators
 assignment_operator: '=' | '+=' | '-=' | '*=' | '/=';
 
+
+// Ideas for Conditional statements (<, <=, >, >=, ==, !=, and, or, not)
+
+// Define logical expressions, I think deliverable_2 wants keywords for (and, or, not)
+logical: expr 'and' expr # AndExpr
+	| expr 'or' expr	 # OrExpr
+	| 'not' expr		 # NotExpr;
+
+// Define comparison expressions (<, <=, >, >=, ==, !=)
+comparison_expr: expr comparison_operator expr;
+
+// Comparison operator tokens
+comparison_operator: '<' | '<=' | '>' | '>=' | '==' | '!=';
+
+
+
+
 list_expr: '[' elements? ']';
 elements: expr (',' expr)*;
 

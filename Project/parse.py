@@ -1,5 +1,5 @@
 from antlr4 import *
-from PythonLexer import PythonLexer
+from Project.PythonLexer import PythonLexer
 from PythonParser import PythonParser
 from PythonListener import PythonListener
 import sys
