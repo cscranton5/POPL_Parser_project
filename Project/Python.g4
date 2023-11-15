@@ -1,7 +1,7 @@
 grammar Python;
 
 // Define the root rule
-prog: (statement+ | NEWLINE)+;
+prog: (statement | ifBlock | NEWLINE)+;
 
 // Define what a statement can be (just expression in our case)
 statement:
@@ -31,12 +31,13 @@ list_expr: '[' elements? ']';
 elements: expr (',' expr)*;
 
 
-//Atul Pseudocode for conditional statements, don't think they work yet
-// ifBlock: INDENT 'if' expr ':' NEWLINE block (elifBlock)* (elseBlock)? DEDENT ;
-// elifBlock: INDENT 'elif' expr ':' NEWLINE block DEDENT ;
-// elseBlock: INDENT 'else' ':' NEWLINE block DEDENT ;
+// Define conditional statements
+ifBlock: 'if' expr ':' NEWLINE INDENT block DEDENT (elifBlock)* (elseBlock)?;
+elifBlock: 'elif' expr ':' NEWLINE INDENT block DEDENT;
+elseBlock: 'else' ':' NEWLINE INDENT block DEDENT;
 
-// block: (statement | ifBlock | NEWLINE)+ ;
+// Define a block of statements
+block: (statement | ifBlock | NEWLINE)+;
 
 // Tokens for the arithmetic operators
 MULT: '*';
@@ -52,8 +53,9 @@ GTEQ: '>=' ;
 LTEQ: '<=' ;
 
 
-// INDENT: ' ' { getCharPositionInLine() == 0 } -> channel(HIDDEN) ;
-// DEDENT: '\n' { getCharPositionInLine() == 0 } -> channel(HIDDEN) ;
+// Tokens for indentation
+INDENT: ' ' {getCharPositionInLine() == 0}? -> skip;
+DEDENT: '\n' {getCharPositionInLine() == 0}? -> skip;
 
 relationalOp
     : GT
