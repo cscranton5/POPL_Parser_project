@@ -19,6 +19,7 @@ if (len(sys.argv) != 2):
     test_file = "../TestCases/project_deliverable_1_testcase.py"
 else:
     test_file = "../TestCases/" + sys.argv[1]
+    default = False
 
 print(test_file)
 python_code = read_file(test_file)
@@ -46,6 +47,7 @@ tree_str = tree.toStringTree(recog=parser)
 print(tree_str)
 
 # Generates parse tree as a GUI
+
 os.system(
-    'antlr4-parse Python.g4 prog -gui < ../TestCases/project_deliverable_1_testcase.py')
+    'antlr4-parse Python.g4 prog -gui < ' + test_file)
 os.system('Ctrl + D')
