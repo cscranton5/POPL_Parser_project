@@ -29,6 +29,11 @@ expr:
 // Define assignment expressions
 assignment: variable assignment_operator expr;
 
+// Define logical expressions (and, or, not)
+logical: expr 'and' expr # AndExpr
+	| expr 'or' expr	 # OrExpr
+	| 'not' expr		 # NotExpr;
+
 
 //Define [] lists
 list_expr: '[' elements? ']';
