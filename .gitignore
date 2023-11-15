@@ -1,0 +1,10 @@
+Project/Python.interp
+Project/Python.tokens
+Project/PythonLexer.interp
+Project/PythonLexer.py
+Project/PythonLexer.tokens
+Project/PythonListener.py
+Project/PythonParser.py
+Project/__pycache__/PythonLexer.cpython-311.pyc
+Project/__pycache__/PythonListener.cpython-311.pyc
+Project/__pycache__/PythonParser.cpython-311.pyc
