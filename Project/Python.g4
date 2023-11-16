@@ -18,6 +18,9 @@ expr:
 	| expr op = (ADD | SUB) expr	# AddSub
 	| expr MOD expr					# Mod
 	| expr relationalOp expr		#conditional
+	| expr AND expr					#and
+	| expr OR expr					#OR
+	| NOT expr						#not
 	| INT							# Int
 	| FLOAT							# Float
 	| STRING						# String
@@ -28,11 +31,6 @@ expr:
 
 // Define assignment expressions
 assignment: variable assignment_operator expr;
-
-// Define logical expressions (and, or, not)
-logical: expr 'and' expr # AndExpr
-	| expr 'or' expr	 # OrExpr
-	| 'not' expr		 # NotExpr;
 
 
 //Define [] lists
@@ -95,6 +93,10 @@ EQ:   '==' ;
 NEQ:  '!=' ;
 GTEQ: '>=' ;
 LTEQ: '<=' ;
+
+AND: 'and';
+OR: 'OR';
+NOT: 'not';
 
 // Tokens for var types and newline
 INT: [0-9]+;
