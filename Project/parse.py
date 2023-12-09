@@ -16,7 +16,7 @@ def read_file(filename):
 
 # Read your code from a file or from a string
 if (len(sys.argv) != 2):
-    test_file = "../TestCases/project_deliverable_1_testcase.py"
+    test_file = "../TestCases/project_deliverable_3_testcase.py"
 else:
     test_file = "../TestCases/" + sys.argv[1]
     default = False

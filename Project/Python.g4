@@ -2,116 +2,93 @@ grammar Python;
 
 // Define the root rule
 prog: (statement | NEWLINE)+;
-//prog: (statement | ifBlock | NEWLINE)+;		////////SWAP WITH ABOVE TO WORK ON IFBLOCKS/////////////////////
 
-// Define what a statement can be (just expression in our case)
+// Define what a statement can be (just an expression in our case)
 statement:
-	expr NEWLINE
-	| expr EOF
-	| assignment NEWLINE
-	| assignment EOF
-	| NEWLINE; //in case new line for formatting
+    expr NEWLINE
+    | expr EOF
+    | assignment NEWLINE
+    | assignment EOF
+    | ifStatement NEWLINE        // Include if statements
+    | whileLoop NEWLINE          // Include while loops
+    | forLoop NEWLINE            // Include for loops
+    | NEWLINE;                   // in case of a new line for formatting
 
 // Define an expression with arithmetic operators
 expr:
-	expr op = (MULT | DIV) expr		# MulDiv
-	| expr op = (ADD | SUB) expr	# AddSub
-	| expr MOD expr					# Mod
-	| expr relationalOp expr		#conditional
-	| expr AND expr					#and
-	| expr OR expr					#OR
-	| NOT expr						#not
-	| INT							# Int
-	| FLOAT							# Float
-	| STRING						# String
-	| list_expr						# List
-	| variable						# VarExpr
-	| '(' expr ')'					# Parens;
-	
+    expr op = (MULT | DIV) expr        # MulDiv
+    | expr op = (ADD | SUB) expr       # AddSub
+    | expr MOD expr                    # Mod
+    | expr relationalOp expr           # conditional
+    | expr AND expr                    # and
+    | expr OR expr                     # OR
+    | NOT expr                         # not
+    | INT                              # Int
+    | FLOAT                            # Float
+    | STRING                           # String
+    | list_expr                        # List
+    | variable                         # VarExpr
+    | '(' expr ')'                     # Parens;
 
 // Define assignment expressions
 assignment: variable assignment_operator expr;
 
+// Define what a variable is
+variable: VAR;
 
-//Define [] lists
+// Define [] lists
 list_expr: '[' elements? ']';
 elements: expr (',' expr)*;
 
-/*  /////////COMMENTED OUT TO TEST CONDITIONALS////////////////////
-//_________________________IF/ELSE_BLOCKS______________________//
-
 // Define conditional statements
-ifBlock: 'if' expr ':' NEWLINE INDENT block DEDENT (elifBlock)* (elseBlock)?;
-elifBlock: 'elif' expr ':' NEWLINE INDENT block DEDENT;
-elseBlock: 'else' ':' NEWLINE INDENT block DEDENT;
+ifStatement:
+    IF expr ':' block (elifStatement)* (elseStatement)?;
 
-// Define a block of statements
-block: (statement | ifBlock | NEWLINE)+;
+elifStatement: 'elif' expr ':' block;
 
+elseStatement: 'else' ':' block;
 
-// Tokens for indentation
-INDENT: ' ' {getCharPositionInLine() == 0}? -> skip;
-DEDENT: '\n' {getCharPositionInLine() == 0}? -> skip;
+block: INDENT (statement | whileLoop | forLoop | NEWLINE)* DEDENT;
 
-// Possible alternative for Tokens for indentation
-// INDENT: [ \t]+ -> skip;
-// DEDENT: '\r'? '\n' [ \t]* {getCharPositionInLine() == 0}? -> skip;
+// Define while loop
+whileLoop: 'while' expr ':' block;
 
-*/
+// Define for loop
+forLoop: 'for' VAR 'in' rangeExpr ':' block;
+rangeExpr: '(' expr ',' expr ')';
 
-
-//__________________OPERATORS______________________//
-
+// Operators
 arithmetic_operator: MULT | DIV | ADD | SUB | MOD;
-
 assignment_operator: EQU | PLUSEQU | SUBEQU | MULTEQU | DIVEQU;
-
 relationalOp: GT | LT | EQ | NEQ | GTEQ | LTEQ;
 
-
-
-//__________________GENERAL_TOKENS____________________________//
-
-//tokens for assignment operators
-EQU: 		'=';
-PLUSEQU: 	'+=';
-SUBEQU: 	'-=';
-MULTEQU: 	'*=';
-DIVEQU: 	'/=';
-
-// Tokens for the arithmetic operators
+// General tokens
+IF: 'if';
+ELSE: 'else';
+ELIF: 'elif';
+COLON: ':';
+EQU: '=';
+PLUSEQU: '+=';
+SUBEQU: '-=';
+MULTEQU: '*=';
+DIVEQU: '/=';
 MULT: '*';
 DIV: '/';
 ADD: '+';
 SUB: '-';
 MOD: '%';
-
-// Tokens for Conditional Statments
-GT:   '>' ;
-LT:   '<' ;
-EQ:   '==' ;
-NEQ:  '!=' ;
-GTEQ: '>=' ;
-LTEQ: '<=' ;
-
+GT: '>';
+LT: '<';
+EQ: '==';
+NEQ: '!=';
+GTEQ: '>=';
+LTEQ: '<=';
 AND: 'and';
-OR: 'OR';
+OR: 'or';
 NOT: 'not';
-
-// Tokens for var types and newline
 INT: [0-9]+;
 STRING: '"' ( ~["\r\n])* '"' | '\'' ( ~['\\\r\n])* '\'';
 FLOAT: [0-9]+ '.' [0-9]+;
-NEWLINE: '\r'? '\n';
-
-// Define what a variable is
-variable: VAR;
-// Tokens for variable names (simple for our example)
+NEWLINE: '\r'? '\n' | '\r';
 VAR: [a-zA-Z_][a-zA-Z_0-9]*;
-
-// Ignore spaces and tabs
-WS: [ \t]+ -> skip;
-
-
-	
-
+WS: [ \t\r\n]+ -> skip;
