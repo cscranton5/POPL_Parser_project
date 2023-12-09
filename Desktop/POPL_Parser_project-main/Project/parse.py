@@ -15,10 +15,21 @@ def read_file(filename):
 
 
 # Read your code from a file or from a string
+# print("Enter 1, 2, 3 for testcases. 1 = project_deliverable_1_testcase, 2 = project_deliverable_2_testcase, 3 = project_deliverable_3_testcase")
+"""
 if (len(sys.argv) != 2):
     test_file = "../TestCases/project_deliverable_1_testcase.py"
 else:
     test_file = "../TestCases/" + sys.argv[1]
+    default = False
+"""
+if (sys.argv[1] == '1'):
+    test_file = "../TestCases/project_deliverable_1_testcase.py"
+elif (sys.argv[1] == '2'):
+    test_file = "../TestCases/project_deliverable_2_testcase.py"
+    default = False
+elif (sys.argv[1] == '3'):
+    test_file = "../TestCases/project_deliverable_3_testcase.py"
     default = False
 
 print(test_file)
