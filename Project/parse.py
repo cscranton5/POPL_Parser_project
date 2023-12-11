@@ -9,7 +9,7 @@ import os
 def read_file(filename):
     file = open(filename, 'r')
     code = file.read()
-    print(code)
+    # print(code)
     file.close()
     return code
 
@@ -30,6 +30,8 @@ lexer = PythonLexer(input_stream)
 stream = CommonTokenStream(lexer)
 parser = PythonParser(stream)
 
+#indentation
+
 # Parse the code
 tree = parser.prog()
 
@@ -44,7 +46,7 @@ walker.walk(listener, tree)
 tree_str = tree.toStringTree(recog=parser)
 
 # Print the parse tree
-print(tree_str)
+# print(tree_str)
 
 # Generates parse tree as a GUI
 

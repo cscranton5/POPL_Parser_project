@@ -28,6 +28,9 @@ https://tomassetti.me/antlr-mega-tutorial/#chapter23
 To run the project:
 
 Ensure you have the proper libraries installed (Antlr4, antlr4-python3-runtime)
+FOR PROPER LIBRARIES:::
+Make sure to pip install antler-denter
+This library is an open-source library made by Yuval Shavit for ready-made counter for indent/dedent.
 
 1. Generate Python files from g4:
 1.   a) inside "Project" directory, run antlr4 -Dlanguage=Python3 Python.g4
