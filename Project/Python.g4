@@ -47,6 +47,7 @@ expr:
 	| STRING						# String
 	| list_expr						# List
 	| variable						# VarExpr
+	| DOT							# Period
 	| '(' expr ')'					# Parens;
 
 // Define assignment expressions
@@ -58,6 +59,11 @@ assignment_operator: '=' | '+=' | '-=' | '*=' | '/=';
 list_expr: '[' elements? ']';
 elements: expr (',' expr)*;
 
+// Comments start with '#'
+COMMENT: '#' ~[\r\n]* -> skip;
+
+// For getting rid of token recognition error, '.'s inside of mass comments
+DOT: '.';
 
 //Atul Pseudocode for conditional statements, don't think they work yet
 ifBlock: INDENT 'if' expr ':' NEWLINE block (elifBlock)* (elseBlock)? DEDENT ;
