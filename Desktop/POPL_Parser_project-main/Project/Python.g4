@@ -1,26 +1,26 @@
 grammar Python;
 
+// NL: ('\r'? '\n' ' '*); //For tabs just switch out ' '* with '\t'*
+
 // Define the root rule
-prog: (statement | NEWLINE)+;
-//prog: (statement | ifBlock | NEWLINE)+;		////////SWAP WITH ABOVE TO WORK ON IFBLOCKS/////////////////////
+prog: (statement+ | NEWLINE)+;
 
 // Define what a statement can be (just expression in our case)
 statement:
 	expr NEWLINE
-	| expr EOF
 	| assignment NEWLINE
-	| assignment EOF
-	| NEWLINE; //in case new line for formatting
+	| NEWLINE
+	| ifBlock
+	| forStatement
+	| whileStatement
+	| expr EOF
+	| assignment EOF; //in case new line for formatting
 
 // Define an expression with arithmetic operators
 expr:
-	expr op = (MULT | DIV) expr		# MulDiv
-	| expr op = (ADD | SUB) expr	# AddSub
-	| expr MOD expr					# Mod
-	| expr relationalOp expr		# conditional
-	| expr AND expr					# and
-	| expr OR expr					# OR
-	| NOT expr						# not
+	expr op = ('*' | '/') expr		# MulDiv
+	| expr op = ('+' | '-') expr	# AddSub
+	| expr '%' expr					# Mod
 	| INT							# Int
 	| FLOAT							# Float
 	| STRING						# String
@@ -31,59 +31,22 @@ expr:
 // Define assignment expressions
 assignment: variable assignment_operator expr;
 
-//Define [] lists
+// Define the possible assignment operators
+assignment_operator: '=' | '+=' | '-=' | '*=' | '/=';
+
 list_expr: '[' elements? ']';
 elements: expr (',' expr)*;
 
-//Define conditional statements
-ifStatement:
-	IF expr ':' block (elifStatement)* (elseStatement)?;
+//Atul Pseudocode for conditional statements, don't think they work yet
+ifBlock:
+	INDENT 'if' expr COLON NEWLINE block (elifBlock)* (elseBlock)?;
+elifBlock: INDENT 'elif' expr COLON NEWLINE block;
+elseBlock: INDENT 'else' COLON NEWLINE block;
 
-elifStatement: 'elif' expr ':' block;
+block: (statement | ifBlock | NEWLINE)+;
 
-elseStatement: 'else' ':' block;
-
-block: INDENT statement* DEDENT;
-/* /////////COMMENTED OUT TO TEST CONDITIONALS////////////////////
- //_________________________IF/ELSE_BLOCKS______________________//
- 
- // Define conditional statements ifBlock: 'if' expr ':' NEWLINE INDENT block DEDENT (elifBlock)*
- (elseBlock)?; elifBlock: 'elif' expr ':' NEWLINE INDENT block DEDENT; elseBlock: 'else' ':' NEWLINE
- INDENT block DEDENT;
- 
- // Define a block of statements block: (statement | ifBlock | NEWLINE)+;
- 
- // Tokens for indentation INDENT: ' ' {getCharPositionInLine() == 0}? -> skip; DEDENT: '\n'
- {getCharPositionInLine() == 0}? -> skip;
- 
- // Possible alternative for Tokens for indentation // INDENT: [ \t]+ -> skip; // DEDENT: '\r'? '\n'
- [ \t]* {getCharPositionInLine() == 0}? -> skip;
- 
-
- */
-
-//__________________OPERATORS______________________//
-
-arithmetic_operator: MULT | DIV | ADD | SUB | MOD;
-
-assignment_operator: EQU | PLUSEQU | SUBEQU | MULTEQU | DIVEQU;
-
-relationalOp: GT | LT | EQ | NEQ | GTEQ | LTEQ;
-
-//__________________GENERAL_TOKENS____________________________//
-
-//tokens for conditional statements
-IF: 'if';
-ELSE: 'else';
-ELIF: 'elif';
-COLON: ':';
-
-//tokens for assignment operators
-EQU: '=';
-PLUSEQU: '+=';
-SUBEQU: '-=';
-MULTEQU: '*=';
-DIVEQU: '/=';
+forStatement: 'for' expr 'in' expr COLON NEWLINE block;
+whileStatement: 'while' expr COLON NEWLINE block;
 
 // Tokens for the arithmetic operators
 MULT: '*';
@@ -91,8 +54,6 @@ DIV: '/';
 ADD: '+';
 SUB: '-';
 MOD: '%';
-
-// Tokens for Conditional Statments
 GT: '>';
 LT: '<';
 EQ: '==';
@@ -100,24 +61,32 @@ NEQ: '!=';
 GTEQ: '>=';
 LTEQ: '<=';
 
-AND: 'and';
-OR: 'OR';
-NOT: 'not';
+// INDENT: ' ' { getCharPositionInLine() == 0 } -> channel(HIDDEN) ; DEDENT: '\n' {
+// getCharPositionInLine() == 0 } -> channel(HIDDEN) ;
+
+relationalOp: GT | LT | EQ | NEQ | GTEQ | LTEQ;
+
+// Define what a variable is
+variable: VAR;
 
 // Tokens for var types and newline
+COLON: ':';
+
 INT: [0-9]+;
 STRING: '"' ( ~["\r\n])* '"' | '\'' ( ~['\\\r\n])* '\'';
 FLOAT: [0-9]+ '.' [0-9]+;
 NEWLINE: '\r'? '\n';
-//SPACE: [ \t\r\n] -> skip;
-INDENT: '\n' [ \t]+;
-DEDENT: '\n' ~[ \t\n]+;
 
-// Define what a variable is
-variable: VAR;
+//SPACE: [' ' | \t]+ -> skip;
+
+SINGLE_LINE_COMMENT: '#' ~[\r\n]* -> skip;
+
+// Multi-line comment starts and ends with triple single or double quotes
+MULTI_LINE_COMMENT_TRIPLE: '"""' .*? '"""' -> skip;
+
+INDENT: '\t';
 // Tokens for variable names (simple for our example)
 VAR: [a-zA-Z_][a-zA-Z_0-9]*;
 
 // Ignore spaces and tabs
-WS: [ \t\r\n]+ -> skip;
-
+WS: [ ]+ -> skip;
