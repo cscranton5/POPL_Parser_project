@@ -1,50 +1,33 @@
 grammar Python;
 
-tokens { INDENT, DEDENT }
-
-@lexer::header{
-from antlr_denter.DenterHelper import DenterHelper
-from PythonParser import PythonParser
-}
-@lexer::members {
-class MyCoolDenter(DenterHelper):
-    def __init__(self, lexer, NEWLINE_token, indent_token, dedent_token, ignore_eof):
-        super().__init__(NEWLINE_token, indent_token, dedent_token, ignore_eof)
-        self.lexer: PythonLexer = lexer
-
-    def pull_token(self):
-        return super(PythonLexer, self.lexer).nextToken()
-
-denter = None
-
-def nextToken(self):
-    if not self.denter:
-        self.denter = self.MyCoolDenter(self, self.NEWLINE, PythonParser.INDENT, PythonParser.DEDENT, True)
-    return self.denter.next_token()
-
-}
-
-// NL: ('\r'? '\n' ' '*); //For tabs just switch out ' '* with '\t'*
-
 // Define the root rule
 prog: (statement+ | NEWLINE)+;
 
 // Define what a statement can be (just expression in our case)
 statement:
-	expr NEWLINE
-	| assignment NEWLINE
-	| NEWLINE
-    | expr EOF
-    | assignment EOF; //in case new line for formatting
+	expr (NEWLINE|EOF)
+	| assignment (NEWLINE|EOF)
+    | ifBlock
+    | forStatement
+    | whileStatement
+    // | ifstatement
+	| NEWLINE;
 
 // Define an expression with arithmetic operators
 expr:
 	expr op = ('*' | '/') expr		# MulDiv
 	| expr op = ('+' | '-') expr	# AddSub
+    | '-' (INT|FLOAT)               # negExpr
 	| expr '%' expr					# Mod
+    | expr relationalOp expr        # relOp
+    | 'not' expr                    # NotExpr
+    | expr 'and' expr               # AndExpr
+    | expr 'or' expr                # OrExpr
+    | VAR '('paramExpr')'           # FuncExpr
 	| INT							# Int
 	| FLOAT							# Float
 	| STRING						# String
+    | BOOL                          # Boolean
 	| list_expr						# List
 	| variable						# VarExpr
 	| '(' expr ')'					# Parens;
@@ -59,12 +42,25 @@ list_expr: '[' elements? ']';
 elements: expr (',' expr)*;
 
 
-//Atul Pseudocode for conditional statements, don't think they work yet
-ifBlock: INDENT 'if' expr ':' NEWLINE block (elifBlock)* (elseBlock)? DEDENT ;
-elifBlock: INDENT 'elif' expr ':' NEWLINE block DEDENT ;
-elseBlock: INDENT 'else' ':' NEWLINE block DEDENT ;
+//conditionals with indenting
+ifBlock: 
+    'if' expr ':' NEWLINE block (elifBlock)* (elseBlock)?;
 
-block: (statement | ifBlock | NEWLINE)+ ;
+elifBlock:
+    INDENT* 'elif' expr ':' NEWLINE block ;
+
+elseBlock:
+    INDENT* 'else' ':' NEWLINE block ;
+
+//loops
+forStatement:
+    'for' expr 'in' expr ':' NEWLINE block ; 
+whileStatement:
+    'while' expr ':' NEWLINE block ; 
+ 
+blockStatement: INDENT+ statement ;
+block: blockStatement+;
+
 
 // Tokens for the arithmetic operators
 MULT: '*';
@@ -78,10 +74,9 @@ EQ:   '==' ;
 NEQ:  '!=' ;
 GTEQ: '>=' ;
 LTEQ: '<=' ;
-
-
-// INDENT: ' ' { getCharPositionInLine() == 0 } -> channel(HIDDEN) ;
-// DEDENT: '\n' { getCharPositionInLine() == 0 } -> channel(HIDDEN) ;
+AND: 'and';
+OR: 'or';
+NOT: 'not';
 
 relationalOp
     : GT
@@ -100,9 +95,20 @@ INT: [0-9]+;
 STRING: '"' ( ~["\r\n])* '"' | '\'' ( ~['\\\r\n])* '\'';
 FLOAT: [0-9]+ '.' [0-9]+;
 NEWLINE: '\r'? '\n';
+BOOL: 'True' | 'False';
+// SPACE: ' ' | '\t';
 
-// Tokens for variable names (simple for our example)
+// Tokens for variable names (simple for our example) -- NOTE: the rules for var and function names are same in Python, so use for funcs too
 VAR: [a-zA-Z_][a-zA-Z_0-9]*;
 
+paramExpr: expr (',' expr)* ;
+
 // Ignore spaces and tabs
-WS: [ \t]+ -> skip;
+WS: [ ]+ -> skip;
+
+COLON: ':';
+INDENT: '\t';
+//comments
+SINGLE_LINE_COMMENT:
+    '#' ~[\r\n]* -> skip;
+MULTI_LINE_COMMENT: ('\'\'\'' | '"""') .*? ('\'\'\'' | '"""') -> skip;
