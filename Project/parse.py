@@ -23,7 +23,7 @@ def write_file(filename, content):
 
 # Read your code from a file or from a string
 if (len(sys.argv) != 2):
-    test_file = "../TestCases/project_deliverable_2_testcase.py"
+    test_file = "../TestCases/project_deliverable_3_testcase.py"
     # test_file = "../TestCases/test.py"
 else:
     test_file = "../TestCases/" + sys.argv[1]
@@ -61,7 +61,7 @@ tree_str = tree.toStringTree(recog=parser)
 
 # Print the parse tree
 print()
-# print(tree_str)
+print(tree_str)
 
 # Generates parse tree as a GUI
 
