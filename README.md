@@ -13,11 +13,11 @@ Group Members:
 
 2. Allan Jones Jr (allanjones24)
 
-3. Shakthivel Gnanasekaran (shakthignana27)
+3. Shakthivel Gnanasekaran (sgckm on branch)
 
-4. Clayton Wiemann (claytonwiemann)
+5. Clayton Wiemann (claytonwiemann)
 
-5. Atul Krishnadas (yugi957)
+6. Atul Krishnadas (yugi957)
 
 
 Helpfull Resources:
