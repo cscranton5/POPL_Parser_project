@@ -1,94 +1,114 @@
 grammar Python;
 
 // Define the root rule
-prog: (statement | NEWLINE)+;
+prog: (statement+ | NEWLINE)+;
 
-// Define what a statement can be (just an expression in our case)
+// Define what a statement can be (just expression in our case)
 statement:
-    expr NEWLINE
-    | expr EOF
-    | assignment NEWLINE
-    | assignment EOF
-    | ifStatement NEWLINE        // Include if statements
-    | whileLoop NEWLINE          // Include while loops
-    | forLoop NEWLINE            // Include for loops
-    | NEWLINE;                   // in case of a new line for formatting
+	expr (NEWLINE|EOF)
+	| assignment (NEWLINE|EOF)
+    | ifBlock
+    | forStatement
+    | whileStatement
+    // | ifstatement
+	| NEWLINE;
 
 // Define an expression with arithmetic operators
 expr:
-    expr op = (MULT | DIV) expr        # MulDiv
-    | expr op = (ADD | SUB) expr       # AddSub
-    | expr MOD expr                    # Mod
-    | expr relationalOp expr           # conditional
-    | expr AND expr                    # and
-    | expr OR expr                     # OR
-    | NOT expr                         # not
-    | INT                              # Int
-    | FLOAT                            # Float
-    | STRING                           # String
-    | list_expr                        # List
-    | variable                         # VarExpr
-    | '(' expr ')'                     # Parens;
+	expr op = ('*' | '/') expr		# MulDiv
+	| expr op = ('+' | '-') expr	# AddSub
+    | '-' (INT|FLOAT)               # negExpr
+	| expr '%' expr					# Mod
+    | expr relationalOp expr        # relOp
+    | 'not' expr                    # NotExpr
+    | expr 'and' expr               # AndExpr
+    | expr 'or' expr                # OrExpr
+    | VAR '('paramExpr')'           # FuncExpr
+	| INT							# Int
+	| FLOAT							# Float
+	| STRING						# String
+    | BOOL                          # Boolean
+	| list_expr						# List
+	| variable						# VarExpr
+	| '(' expr ')'					# Parens;
 
 // Define assignment expressions
 assignment: variable assignment_operator expr;
 
-// Define what a variable is
-variable: VAR;
+// Define the possible assignment operators
+assignment_operator: '=' | '+=' | '-=' | '*=' | '/=';
 
-// Define [] lists
 list_expr: '[' elements? ']';
 elements: expr (',' expr)*;
 
-// Define conditional statements
-ifStatement:
-    IF expr ':' block (elifStatement)* (elseStatement)?;
 
-elifStatement: 'elif' expr ':' block;
+//conditionals with indenting
+ifBlock: 
+    'if' expr ':' NEWLINE block (elifBlock)* (elseBlock)?;
 
-elseStatement: 'else' ':' block;
+elifBlock:
+    INDENT* 'elif' expr ':' NEWLINE block ;
 
-block: INDENT (statement | whileLoop | forLoop | NEWLINE)* DEDENT;
+elseBlock:
+    INDENT* 'else' ':' NEWLINE block ;
 
-// Define while loop
-whileLoop: 'while' expr ':' block;
+//loops
+forStatement:
+    'for' expr 'in' expr ':' NEWLINE block ; 
+whileStatement:
+    'while' expr ':' NEWLINE block ; 
+ 
+blockStatement: INDENT+ statement ;
+block: blockStatement+;
 
-// Define for loop
-forLoop: 'for' VAR 'in' rangeExpr ':' block;
-rangeExpr: '(' expr ',' expr ')';
 
-// Operators
-arithmetic_operator: MULT | DIV | ADD | SUB | MOD;
-assignment_operator: EQU | PLUSEQU | SUBEQU | MULTEQU | DIVEQU;
-relationalOp: GT | LT | EQ | NEQ | GTEQ | LTEQ;
-
-// General tokens
-IF: 'if';
-ELSE: 'else';
-ELIF: 'elif';
-COLON: ':';
-EQU: '=';
-PLUSEQU: '+=';
-SUBEQU: '-=';
-MULTEQU: '*=';
-DIVEQU: '/=';
+// Tokens for the arithmetic operators
 MULT: '*';
 DIV: '/';
 ADD: '+';
 SUB: '-';
 MOD: '%';
-GT: '>';
-LT: '<';
-EQ: '==';
-NEQ: '!=';
-GTEQ: '>=';
-LTEQ: '<=';
+GT:   '>' ;
+LT:   '<' ;
+EQ:   '==' ;
+NEQ:  '!=' ;
+GTEQ: '>=' ;
+LTEQ: '<=' ;
 AND: 'and';
 OR: 'or';
 NOT: 'not';
+
+relationalOp
+    : GT
+    | LT
+    | EQ
+    | NEQ
+    | GTEQ
+    | LTEQ
+    ;
+
+// Define what a variable is
+variable: VAR;
+
+// Tokens for var types and newline
 INT: [0-9]+;
 STRING: '"' ( ~["\r\n])* '"' | '\'' ( ~['\\\r\n])* '\'';
 FLOAT: [0-9]+ '.' [0-9]+;
-NEWLINE: '\r'? '\n' | '\r';
+NEWLINE: '\r'? '\n';
+BOOL: 'True' | 'False';
+// SPACE: ' ' | '\t';
+
+// Tokens for variable names (simple for our example) -- NOTE: the rules for var and function names are same in Python, so use for funcs too
 VAR: [a-zA-Z_][a-zA-Z_0-9]*;
-WS: [ \t\r\n]+ -> skip;
+
+paramExpr: expr (',' expr)* ;
+
+// Ignore spaces and tabs
+WS: [ ]+ -> skip;
+
+COLON: ':';
+INDENT: '\t';
+//comments
+SINGLE_LINE_COMMENT:
+    '#' ~[\r\n]* -> skip;
+MULTI_LINE_COMMENT: ('\'\'\'' | '"""') .*? ('\'\'\'' | '"""') -> skip;
