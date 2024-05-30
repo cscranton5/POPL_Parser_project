@@ -5,11 +5,11 @@ Group Name: Parser Puzzlers
 
 Programing Language: Python3
 
-GitHub: https://github.com/cgs2xw/POPL_Parser_project 
+GitHub: https://github.com/cscranton5/POPL_Parser_project 
 
 Group Members:
 
-1. Carter Scranton (cgs2xw)
+1. Carter Scranton (cscranton5)
 
 2. Allan Jones Jr (allanjones24)
 
